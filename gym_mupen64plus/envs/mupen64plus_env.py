@@ -1,4 +1,5 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
+#from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 import abc
 import array
@@ -194,7 +195,7 @@ class Mupen64PlusEnv(gym.Env):
 
         xvfb_proc = None
         if config['USE_XVFB']:
-            display_num = -1
+            display_num = -1 #Displaynum hate
             success = False
             # If we couldn't find an open display number after 15 attempts, give up
             while not success and display_num <= 15:
@@ -343,7 +344,7 @@ class ControllerHTTPServer(HTTPServer, object):
             self.send_response(resp_code)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
-            self.wfile.write(resp_data)
+            self.wfile.write(resp_data.encode("utf-8"))
 
         def do_GET(self):
 
