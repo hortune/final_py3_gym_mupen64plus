@@ -19,7 +19,9 @@ from gym.utils import seeding
 import numpy as np
 
 import mss
-
+from IPython import embed
+import os
+import signal
 
 ###############################################
 class ImageHelper:
@@ -142,6 +144,7 @@ class Mupen64PlusEnv(gym.Env):
     def _close(self):
         cprint('Close called!', 'yellow')
         self.running = False
+        embed()
         self._kill_emulator()
         self._stop_controller_server()
 
@@ -210,7 +213,7 @@ class Mupen64PlusEnv(gym.Env):
 
                 cprint('Starting xvfb with command: %s' % xvfb_cmd, 'yellow')
 
-                xvfb_proc = subprocess.Popen(xvfb_cmd, shell=False, stderr=subprocess.STDOUT)
+                xvfb_proc = subprocess.Popen(xvfb_cmd, shell=False, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
 
                 time.sleep(2) # Give xvfb a couple seconds to start up
 
@@ -267,7 +270,8 @@ class Mupen64PlusEnv(gym.Env):
             if self.emulator_process is not None:
                 self.emulator_process.kill()
             if self.xvfb_process is not None:
-                self.xvfb_process.kill()
+                os.killpg(os.getpgid(self.xvfb_process.pid),signal.SIGTERM)
+                #self.xvfb_process.kill()
         except AttributeError:
             pass # We may be shut down during intialization before these attributes have been set
 
